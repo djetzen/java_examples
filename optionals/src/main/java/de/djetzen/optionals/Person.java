@@ -12,6 +12,7 @@ public class Person {
     public String getStreet() {
         return Optional.ofNullable(location)
                 .map(location -> location.getStreet())
+                .map(street -> street.getStreetName())
                 .orElse(null);
     }
 }
