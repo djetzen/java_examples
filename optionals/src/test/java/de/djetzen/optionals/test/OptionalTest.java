@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class OptionalTest {
 
     @Test
-    void getStreetIsReturned() {
+    void streetIsReturned() {
         Person p = new Person();
         p.setName("Dominik");
         p.setLocation(Location.builder().street("Main Street").zipCode("00000").city("Frankfurt").houseNumber(5).build());
@@ -17,7 +17,7 @@ public class OptionalTest {
     }
 
     @Test
-    void ortIsOptional(){
+    void locationIsOptional(){
         Person p = new Person();
         p.setName("Dominik");
         assertEquals(null, p.getStreet());
