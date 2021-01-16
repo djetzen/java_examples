@@ -2,7 +2,6 @@ package de.djetzen.archunit;
 
 import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaAnnotation;
-import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
@@ -10,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.web.bind.annotation.RestController;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 import static com.tngtech.archunit.library.Architectures.onionArchitecture;
 
 class ArchUnitTests {
@@ -19,7 +17,7 @@ class ArchUnitTests {
 
     private String BASE_PACKAGE = "de.djetzen.archunit";
 
-    private JavaClasses classFileImporter = new ClassFileImporter()
+    private JavaClasses classesOfProjectWithoutConfiguration = new ClassFileImporter()
             .withImportOption(ignoreConfigurations)
             .importPackages(BASE_PACKAGE+"..");
 
@@ -32,24 +30,25 @@ class ArchUnitTests {
                 .adapter("persistence", BASE_PACKAGE+".adapter.out.persistence..")
                 .adapter("rest", BASE_PACKAGE+".adapter.in.web..")
                 .withOptionalLayers(true)
-                .check(classFileImporter);
+                .check(classesOfProjectWithoutConfiguration);
     }
 
     @Test
     void classesInPortsPackageShouldHavePortOrUseCaseInName() {
         classes().that().resideInAPackage("..port..")
                 .should().haveNameMatching(".*Port")
-                .orShould().haveNameMatching(".*UseCase").check(classFileImporter);
+                .orShould().haveNameMatching(".*UseCase").check(classesOfProjectWithoutConfiguration);
     }
 
     @Test
     void classesAnnotatedWithRestControllerAnnotationShouldHaveControllerInName() {
-        classes().that().areAnnotatedWith(RestController.class).should().haveNameMatching(".*Controller").check(classFileImporter);
+        classes().that().areAnnotatedWith(RestController.class)
+                .should().haveNameMatching(".*Controller").check(classesOfProjectWithoutConfiguration);
     }
 
     @Test
     void domainPackageShouldHaveNoDependenciesToSpring() {
-        DescribedPredicate<JavaAnnotation> springAnnotationPredicate = new DescribedPredicate<>("Spring filter") {
+        DescribedPredicate<JavaAnnotation> springAnnotationPredicate = new DescribedPredicate<>("Filter for org.spring package") {
             @Override
             public boolean apply(JavaAnnotation input) {
                 return input.getType().getName().startsWith("org.spring");
@@ -57,6 +56,6 @@ class ArchUnitTests {
         };
 
         classes().that().resideInAPackage("..domain..").should()
-                .notBeAnnotatedWith(springAnnotationPredicate).check(classFileImporter);
+                .notBeAnnotatedWith(springAnnotationPredicate).check(classesOfProjectWithoutConfiguration);
     }
 }
