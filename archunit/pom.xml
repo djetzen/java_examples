@@ -25,7 +25,7 @@
         <dependency>
             <groupId>com.tngtech.archunit</groupId>
             <artifactId>archunit-junit5</artifactId>
-            <version>0.20.0</version>
+            <version>0.20.1</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
